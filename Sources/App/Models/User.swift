@@ -30,7 +30,7 @@ final class User: Model, Content {
     @Field(key: FieldKeys.username)
     var username: String
     
-    @Children(for: \.$organizer)
+    @Children(for: \.$creator)
     var organizedEvents: [Event]
     
     @Siblings(

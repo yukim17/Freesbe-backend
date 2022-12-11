@@ -1,31 +1,20 @@
 import Fluent
 import Vapor
 
-struct TodoController: RouteCollection {
+struct CategoryController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
-        let todos = routes.grouped("todos")
-        todos.get(use: index)
-        todos.post(use: create)
-        todos.group(":todoID") { todo in
-            todo.delete(use: delete)
-        }
+        let categoriesRoutes = routes.grouped("categories")
+        categoriesRoutes.get(use: index)
+        categoriesRoutes.post("create", use: create)
     }
 
-    func index(req: Request) async throws -> [Todo] {
-        try await Todo.query(on: req.db).all()
+    func index(req: Request) async throws -> [Category] {
+        try await Category.query(on: req.db).all()
     }
-
-    func create(req: Request) async throws -> Todo {
-        let todo = try req.content.decode(Todo.self)
-        try await todo.save(on: req.db)
-        return todo
-    }
-
-    func delete(req: Request) async throws -> HTTPStatus {
-        guard let todo = try await Todo.find(req.parameters.get("todoID"), on: req.db) else {
-            throw Abort(.notFound)
-        }
-        try await todo.delete(on: req.db)
-        return .noContent
+    
+    func create(req: Request) async throws -> Category {
+        let category = try req.content.decode(Category.self)
+        try await category.save(on: req.db)
+        return category
     }
 }

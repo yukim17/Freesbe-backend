@@ -31,11 +31,13 @@ struct CategoriesSeed: AsyncMigration {
 struct EventsSeed: AsyncMigration {
     
     func prepare(on database: Database) async throws {
-        let user = User(name: "John", surname: "Doe", username: "jdoe")
-        try await user.save(on: database)
+        let user1 = User(name: "John", surname: "Doe", username: "jdoe")
+        let user2 = User(name: "Angela", surname: "Doe", username: "adoe")
+        let user3 = User(name: "Will", surname: "Smith", username: "wsmith")
+        try await [user1, user2, user3].create(on: database)
         
         let category = try await database.query(Category.self).first()
-        guard let userId = user.id, let categoryId = category?.id else {
+        guard let userId = user1.id, let categoryId = category?.id else {
             throw FluentError.idRequired
         }
         let events = [

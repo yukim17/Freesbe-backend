@@ -22,9 +22,20 @@ struct EventController: RouteCollection {
     }
     
     func index(req: Request) async throws -> [Event] {
-        let events = try await Event.query(on: req.db).all()
+        let eventsData = try req.query.decode(GetEventsData.self)
         
-        return events
+        guard let userId = eventsData.userId else {
+            return try await Event.query(on: req.db).all()
+        }
+        
+        switch eventsData.userRole {
+        case .creator:
+            return try await getEventsCreatedBy(user: userId, req)
+        case .participant:
+            return try await getEventsJoinedBy(user: userId, req)
+        default:
+            throw Abort(.notFound)
+        }
     }
     
     func create(req: Request) async throws -> HTTPStatus {
@@ -35,13 +46,14 @@ struct EventController: RouteCollection {
     }
     
     func get(req: Request) async throws -> Event {
-        let eventId = try req.query.decode(EventIdData.self)
-        guard let event = try await Event.find(eventId.id, on: req.db) else {
+        let eventId = try req.query.decode(GetEventData.self)
+        guard let event = try await Event.query(on: req.db)
+                .filter(\.$id == eventId.id)
+                .with(\.$creator)
+                .with(\.$category)
+                .first() else {
             throw Abort(.notFound)
         }
-//        try await Event.query(on: req.db).with(\.$creator).filter(<#T##filter: ModelFieldFilter<Event, Event>##ModelFieldFilter<Event, Event>#>)
-        let _ = try await event.$creator.get(on: req.db)
-        
         return event
     }
     
@@ -65,6 +77,10 @@ struct EventController: RouteCollection {
         guard let event = try await Event.find(participationData.eventId, on: req.db),
               let user = try await User.find(participationData.userId, on: req.db) else {
             throw Abort(.notFound)
+        }
+        
+        guard let userId = user.id, userId != event.$creator.id else {
+            throw Abort(.forbidden)
         }
         
         do {
@@ -97,6 +113,22 @@ struct EventController: RouteCollection {
         try await event.delete(on: req.db)
         return .ok
     }
+    
+    // MARK: - Private
+    
+    private func getEventsCreatedBy(user userId: UUID, _ req: Request) async throws -> [Event] {
+        return try await Event.query(on: req.db)
+            .filter(\.$creator.$id == userId)
+            .with(\.$creator)
+            .with(\.$category)
+            .with(\.$participants)
+            .all()
+    }
+    
+    private func getEventsJoinedBy(user userId: UUID, _ req: Request) async throws -> [Event] {
+        return try await Event.query(on: req.db)
+            .join(siblings: \.$participants)
+            .filter(EventUserPivot.self, \.$user.$id == userId)
+            .all()
+    }
 }
-
-

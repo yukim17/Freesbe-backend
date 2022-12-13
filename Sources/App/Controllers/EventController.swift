@@ -25,7 +25,10 @@ struct EventController: RouteCollection {
         let eventsData = try req.query.decode(GetEventsData.self)
         
         guard let userId = eventsData.userId else {
-            return try await Event.query(on: req.db).all()
+            return try await Event.query(on: req.db)
+                .with(\.$creator)
+                .with(\.$category)
+                .all()
         }
         
         switch eventsData.userRole {
@@ -129,6 +132,8 @@ struct EventController: RouteCollection {
         return try await Event.query(on: req.db)
             .join(siblings: \.$participants)
             .filter(EventUserPivot.self, \.$user.$id == userId)
+            .with(\.$creator)
+            .with(\.$category)
             .all()
     }
 }

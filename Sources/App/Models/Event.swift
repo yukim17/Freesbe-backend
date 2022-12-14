@@ -31,8 +31,8 @@ final class Event: Model, Content {
     @OptionalField(key: FieldKeys.description)
     var description: String?
     
-//    @Field(key: FieldKeys.date)
-//    var date: Date
+    @Field(key: FieldKeys.date)
+    var date: String
     
     @Field(key: FieldKeys.place)
     var place: String

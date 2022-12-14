@@ -41,11 +41,11 @@ struct EventController: RouteCollection {
         }
     }
     
-    func create(req: Request) async throws -> HTTPStatus {
+    func create(req: Request) async throws -> Event {
         let eventData = try req.content.decode(CreateEventData.self)
         let event = Event(from: eventData)
         try await event.save(on: req.db)
-        return .created
+        return event
     }
     
     func get(req: Request) async throws -> Event {
@@ -75,7 +75,7 @@ struct EventController: RouteCollection {
         return event
     }
     
-    func join(req: Request) async throws -> HTTPStatus {
+    func join(req: Request) async throws -> OperationResult {
         let participationData = try req.query.decode(EventParticipationData.self)
         guard let event = try await Event.find(participationData.eventId, on: req.db),
               let user = try await User.find(participationData.userId, on: req.db) else {
@@ -88,13 +88,13 @@ struct EventController: RouteCollection {
         
         do {
             try await event.$participants.attach(user, on: req.db)
-            return .created
+            return OperationResult(isSuccess: true)
         } catch {
-            return .notModified
+            return OperationResult(isSuccess: false)
         }
     }
     
-    func leave(req: Request) async throws -> HTTPStatus {
+    func leave(req: Request) async throws -> OperationResult {
         let participationData = try req.query.decode(EventParticipationData.self)
         guard let event = try await Event.find(participationData.eventId, on: req.db),
               let user = try await User.find(participationData.userId, on: req.db) else {
@@ -103,18 +103,18 @@ struct EventController: RouteCollection {
         
         do {
             try await event.$participants.detach(user, on: req.db)
-            return .ok
+            return OperationResult(isSuccess: true)
         } catch {
-            return .notModified
+            return OperationResult(isSuccess: false)
         }
     }
     
-    func delete(req: Request) async throws -> HTTPStatus {
+    func delete(req: Request) async throws -> OperationResult {
         guard let event = try await Event.find(req.parameters.get(Event.FieldKeys.id), on: req.db) else {
             throw Abort(.notFound)
         }
         try await event.delete(on: req.db)
-        return .ok
+        return OperationResult(isSuccess: true)
     }
     
     // MARK: - Private

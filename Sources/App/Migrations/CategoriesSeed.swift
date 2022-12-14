@@ -13,9 +13,10 @@ struct CategoriesSeed: AsyncMigration {
         let categories = [
             Category(name: "Design", description: "", color: ""),
             Category(name: "Code", description: "", color: ""),
-            Category(name: "Game", description: "", color: ""),
-            Category(name: "Fun", description: "", color: ""),
-            Category(name: "Other skills", description: "", color: "")
+            Category(name: "Games", description: "", color: ""),
+            Category(name: "Social", description: "", color: ""),
+            Category(name: "Business", description: "", color: ""),
+            Category(name: "Others", description: "", color: "")
         ]
         
         let _ = categories.map { category in

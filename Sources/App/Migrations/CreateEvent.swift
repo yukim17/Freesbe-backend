@@ -14,7 +14,7 @@ struct CreateEvent: AsyncMigration {
             .id()
             .field(Event.FieldKeys.title, .string, .required)
             .field(Event.FieldKeys.description, .string)
-//            .field(Event.FieldKeys.date, .datetime, .required)
+            .field(Event.FieldKeys.date, .string, .required)
             .field(Event.FieldKeys.place, .string, .required)
             .field(Event.FieldKeys.creator, .uuid, .required, .references(User.schema, "id"))
             .field(Event.FieldKeys.category, .uuid, .required, .references(Category.schema, "id"))

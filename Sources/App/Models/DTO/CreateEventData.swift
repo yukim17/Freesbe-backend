@@ -11,7 +11,7 @@ struct CreateEventData: Content {
     let title: String
     let description: String?
     let place: String
-//    let date: Date
+    let date: String
     let creatorId: UUID
     let categoryId: UUID
 }

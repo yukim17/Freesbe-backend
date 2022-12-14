@@ -56,7 +56,7 @@ final class Event: Model, Content {
         id: UUID? = nil,
         title: String,
         description: String? = nil,
-//        date: Date,
+        date: String,
         place: String,
         categoryId: Category.IDValue,
         organizerId: User.IDValue
@@ -64,7 +64,7 @@ final class Event: Model, Content {
         self.id = id
         self.title = title
         self.description = description
-//        self.date = Date()
+        self.date = date
         self.place = place
         self.$category.id = categoryId
         self.$creator.id = organizerId

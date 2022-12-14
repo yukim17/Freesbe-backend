@@ -6,6 +6,7 @@
 //
 
 import Fluent
+import Foundation
 
 struct CategoriesSeed: AsyncMigration {
     
@@ -41,12 +42,16 @@ struct EventsSeed: AsyncMigration {
         guard let userId = user1.id, let categoryId = category?.id else {
             throw FluentError.idRequired
         }
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "d.MM.YYYY, hh:mm"
+        let dateString = dateFormatter.string(from: date)
         let events = [
-            Event(title: "Some event 1", place: "Some place", categoryId: categoryId, organizerId: userId),
-            Event(title: "Some event 2", place: "Some place", categoryId: categoryId, organizerId: userId),
-            Event(title: "Some event 3", place: "Some place", categoryId: categoryId, organizerId: userId),
-            Event(title: "Some event 4", place: "Some place",categoryId: categoryId, organizerId: userId),
-            Event(title: "Some event 5", place: "Some place", categoryId: categoryId, organizerId: userId)
+            Event(title: "Some event 1", date: dateString, place: "Some place", categoryId: categoryId, organizerId: userId),
+            Event(title: "Some event 2", date: dateString, place: "Some place", categoryId: categoryId, organizerId: userId),
+            Event(title: "Some event 3", date: dateString, place: "Some place", categoryId: categoryId, organizerId: userId),
+            Event(title: "Some event 4", date: dateString, place: "Some place",categoryId: categoryId, organizerId: userId),
+            Event(title: "Some event 5", date: dateString, place: "Some place", categoryId: categoryId, organizerId: userId)
         ]
         
         let _ = events.map { event in

@@ -28,10 +28,7 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateCategories())
     app.migrations.add(CreateUser())
     app.migrations.add(CreateEvent())
-    app.migrations.add(CategoriesSeed())
     app.migrations.add(EventsSeed())
-    app.migrations.add(CreateEventUserPivot())
-    app.migrations.add(CreateToken())
     
     app.logger.logLevel = .debug
     

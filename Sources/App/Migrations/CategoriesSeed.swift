@@ -36,14 +36,13 @@ struct EventsSeed: AsyncMigration {
         let user3 = User(name: "Will", surname: "Smith", username: "wsmith")
         try await [user1, user2, user3].create(on: database)
         
-        let category = try await database.query(Category.self).first()
         guard let user1Id = user1.id,
-              let user2Id = user2?.id,
-              let user3Id = user3?.id,
-              let designCategoryId = designCategory?.id,
-              let codeCategoryId = codeCategory?.id,
-              let funCategoryId = funCategory?.id,
-              let socialCategoryId = socialCategory?.id
+              let user2Id = user2.id,
+              let user3Id = user3.id,
+              let designCategoryId = designCategory.id,
+              let codeCategoryId = codeCategory.id,
+              let funCategoryId = funCategory.id,
+              let socialCategoryId = socialCategory.id
         else {
             throw FluentError.idRequired
         }
